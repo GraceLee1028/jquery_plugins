@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>弹窗demo</title>
+
+</head>
+<body>
+<button onclick="LayerInit.loadL()">加载</button>
+<button onclick="LayerInit.alertL('成功')">提交</button>
+<button onclick="LayerInit.confirmL({msg:'你确定删除？'})">删除</button>
+</body>
+<link rel="stylesheet" href="../plugins/layer/skin/default/layer.css">
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="../plugins/layer/layer.js"></script>
+<script>
+    var LayerInit = {
+        init: function () {
+            //弹窗全局设置
+            layer.config({
+                anim: 9, //默认动画风格
+                skin: 'layer-ext-moon'
+            });
+        },
+        changeTitle: function (title, index) {//修改某个层的标题，index: 某个层
+            layer.title(title, index);
+        },
+        loadL: function (type) { //加载
+            type = type || 0;
+            var index = layer.load(type, {
+                area: '60px'
+            });
+            return index;
+        },
+        alertL: function (content, icon) {//信息提示
+            icon = icon || 1;
+            var index = layer.alert(content, {
+                icon: icon,
+                offset: '250px'
+            });
+            return index;
+        },
+        confirmL: function (options) {//确认框提示
+            var btn = options.btn || ['确定', '取消'];
+            var index = layer.confirm(options.msg, {
+                title: options.title || '提示',
+                btn: btn, //按钮
+                success: function (layero, index) {
+                    //弹出确认框，继续单击enter，表示确定；
+                    $(document).off('keydown').on('keydown', function (e) {
+                        if (e.keyCode == 13) {
+                            $(".layui-layer").focus();
+                            if (options.ok) { options.ok(); }
+                            layer.close(index);
+                            preventDefault(e);
+                        }
+                    })
+                },
+                offset: '250px',
+                shadeClose: true,
+                shade: 0.3
+            }, function () {
+                if (options.ok) { options.ok(); }
+                layer.close(index);
+            }, function () {
+                if (options.cancel) { options.cancel(); }
+                layer.close(index);
+            });
+        },
+        openImg: function (options, ele) {//弹出图片
+            var index = layer.open({
+                type: 1,    //页面层
+                title: options.title || false,
+                closeBtn: 1,
+                area: options.area || "auto",
+                //            skin: 'layui-layer-nobg', //没有背景色
+                shadeClose: true,
+                shade: 0.3,
+                content: options.content
+            });
+            if (ele) { ele.blur(); }//避免单击enter时，重复弹出
+            return index;
+        },
+        openPage: function (options) {//弹出内容【某块隐藏的内容】
+            var index = layer.open({
+                type: 1,
+                title: options.title || "设置包邮地区",
+                closeBtn: 1,
+                btn: options.btn || ['确定', '取消'],
+                shadeClose: true,
+                shade: 0.3,
+                area: options.area || ['450px', '410px'],
+                yes: function () {
+                    if (options.ok) { options.ok(); }
+                },
+                content: options.content //content[$(#id)]
+            });
+            return index;
+        },
+        openIframe: function (options) { //打开一个iframe页面
+            layer.open({
+                type: 2,
+                title: options.title,
+                shadeClose: true,
+                shade: 0.3,
+                area: options.area || ['360px', '90%'],
+                content: options.url || "http://www.baidu.com" //iframe的url
+            });
+        }
+    };
+</script>
+</html>
